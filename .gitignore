@@ -9,3 +9,4 @@ reports/*_meta.json
 models/*.task
 t5_out/
 .kaggle/
+tools/
