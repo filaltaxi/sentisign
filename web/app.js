@@ -79,7 +79,7 @@ function render() {
 
 // Two ways to reach the sentence + voice models: a WebSocket on the local server (laptop),
 // or the Gradio API on the Hugging Face Space (free shared GPU, one call per request).
-let gradio = null, prepared = null;
+let gradio = null;
 async function connectServer() {
   // On the Hugging Face Space the page is served by Gradio's file route; on the laptop by the local server.
   let mode = location.pathname.includes("/gradio_api/file=") ? "gradio" : "ws";
@@ -97,15 +97,14 @@ async function sendGradio(o) {
   const g = o.glosses.join(" ");
   try {
     if (o.type === "prepare") {
-      if (!g) return;
-      const key = g + "|" + o.emotion;
-      prepared = { key, p: gradio.predict("/compose", [g, o.emotion]) };
-      const r = await prepared.p; if (prepared && prepared.key === key) deliver({ type: "sentence", text: r.data[0] });
+      // On the shared GPU every call waits for a GPU and counts against the visitor's daily quota,
+      // so the sentence is written once, together with the speech, when the signer pauses.
+      return;
     } else if (o.type === "speak") {
       setStatus("Speaking… (the free GPU can take a few seconds)");
       const r = await gradio.predict("/speak", [g, o.emotion, o.sentence || ""]);
       const [text, wav] = r.data; deliver({ type: "sentence", text });
-      deliver(wav ? { type: "audio", wav } : { type: "text_only" }); prepared = null;
+      deliver(wav ? { type: "audio", wav } : { type: "text_only" });
       setStatus(`Ready · ${meta.glosses.length} signs`);
     }
   } catch (e) { setStatus("Server busy or GPU quota reached: " + (e.message || e)); setState("idle"); }

@@ -14,6 +14,8 @@ webcam ─► MediaPipe hands + pose + face (browser)
             Chatterbox TTS, Kokoro fallback ─► speech with matching expressiveness
 ```
 
+**Live demo:** [omarsheriffh-sentisign.hf.space](https://omarsheriffh-sentisign.hf.space) (Hugging Face Space on a free shared GPU; it sleeps when idle, so the first visit can take a minute, and each sentence waits a few seconds for a GPU). Allow the camera, sign a few words with a short pause between them, then rest your hands for about a second.
+
 ## Results
 
 All numbers were measured on an RTX 4050 laptop GPU. Sign accuracy is top-1 on **signers the model never saw in training** unless stated otherwise.
@@ -50,7 +52,9 @@ What moved the sign numbers was data, not architecture. Adding [ASL Citizen](htt
 
 1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 2. Double-click `run.bat` once. It creates `env/`, installs PyTorch (CUDA 12.4) and the dependencies, downloads WLASL from Kaggle (needs a Kaggle API token in `%USERPROFILE%\.kaggle\`) and trains the sign models. To only run the app with the included weights, stop after the install step and run `pip install -r requirements.txt` in `env`.
-3. Double-click `start_app.bat`. The browser opens `http://127.0.0.1:8000`; allow the camera. The first start downloads Flan-T5-base and Chatterbox from Hugging Face.
+3. Double-click `start_app.bat` for local use, or `start_live.bat` to also share it at a temporary public https link through Cloudflare Tunnel. The browser opens `http://127.0.0.1:8000`; allow the camera. The first start downloads Flan-T5-base and Chatterbox from Hugging Face.
+
+The Hugging Face Space runs [`space_gradio/app.py`](space_gradio/app.py); the three files the Space repository itself holds are in [`space_gradio/space_repo/`](space_gradio/space_repo/).
 
 The full pipeline is three scripts run in order: `run.bat` (WLASL), `run_aslc.bat` (adds ASL Citizen, which you download yourself under its licence) and `run_stage3.bat` (deployment model, emotion, language model, voice benchmark, continuous signing and a server self-test).
 
