@@ -1,0 +1,30 @@
+run                                split      top1   top5    ECE cov@80 test signers  extra
+deploy300                          all        73.7   88.3  0.076   90.2           46  10931
+wlasl100_aslc_official_s0          official   63.0   88.0  0.159   97.0           34   3906
+wlasl100_aslc_signer_s0            signer     69.7   86.2  0.123  100.0           13   3906
+wlasl100_aslc_signer_s1            signer     79.1   95.4  0.091   89.3           13   3906
+wlasl100_aslc_signer_s2            signer     79.9   96.6  0.109  100.0           13   3906
+wlasl100_official_s0               official   57.0   81.0  0.139   45.0           34      0
+wlasl100_random_s0                 random     54.7   78.3  0.067   21.7           45      0
+wlasl100_signer_noloc_s0           signer     34.2   59.9  0.095   10.5           13      0
+wlasl100_signer_s0                 signer     44.1   71.1  0.071    8.6           13      0
+wlasl100_signer_s1                 signer     42.9   75.0  0.116    2.6           13      0
+wlasl100_signer_s2                 signer     50.3   77.9  0.090   37.6           13      0
+wlasl300_aslc_official_s0          official   71.3   88.0  0.095   98.4           49  10931
+wlasl300_aslc_signer_s0            signer     77.3   91.1  0.049   82.6           14  10931
+wlasl300_aslc_signer_s1            signer     82.7   94.4  0.072  100.0           14  10931
+wlasl300_aslc_signer_s2            signer     80.0   93.5  0.060  100.0           14  10931
+wlasl300_official_s0               official   46.4   73.2  0.113   27.4           49      0
+wlasl300_signer_noloc_s0           signer     24.5   50.0  0.080    0.0           14      0
+wlasl300_signer_s0                 signer     33.5   60.2  0.078    0.0           14      0
+wlasl300_signer_s1                 signer     46.5   75.2  0.071   12.6           14      0
+wlasl300_signer_s2                 signer     40.0   71.5  0.056    0.0           14      0
+
+reports/t5.json: {"t5_bleu": 78.47616239105642, "t5_chrf": 81.30474358842253, "t5_exact": 0.7267617812364894, "baseline_bleu": 0.4182810270921865, "baseline_chrf": 32.53869674134805, "baseline_exact": 0.0, "gen_ms_p50": 196.02840021252632}
+
+reports/emotion_real.json: {"n_train": 10991, "n_test": 2738, "faces_missed": 1610}
+  logistic 0.514320540817202 mlp 0.5474610653847638 no-brows 0.5109720641153118
+
+reports/measured_latency.json: {"chatterbox": {"p50_ms": 1399.1405963897705, "p95_ms": 1882.97700881958, "note": "full-utterance time; streaming first-chunk is lower"}, "kokoro": {"p50_ms": 61.27762794494629, "p95_ms": 190.38867950439453, "note": "full-utterance time; streaming first-chunk is lower"}}
+
+reports/continuous_real_100.json: {"subset": 100, "seed": 0, "n_test_signers": 13, "A_isolated_model": {"WER": 0.638, "perfect_sentences": 0.06, "threshold": 0.35, "train_windows": 738, "blank_windows": 0}, "B_sentence_windows_plus_blank": {"WER": 0.5224444444444445, "perfect_sentences": 0.14, "threshold": 0.35, "train_windows": 20931, "blank_windows": 4381}, "minutes": 9.07386971314748}

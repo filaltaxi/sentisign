@@ -1,0 +1,12 @@
+{
+ "chatterbox": {
+  "p50_ms": 1399.1405963897705,
+  "p95_ms": 1882.97700881958,
+  "note": "full-utterance time; streaming first-chunk is lower"
+ },
+ "kokoro": {
+  "p50_ms": 61.27762794494629,
+  "p95_ms": 190.38867950439453,
+  "note": "full-utterance time; streaming first-chunk is lower"
+ }
+}

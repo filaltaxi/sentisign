@@ -1,0 +1,11 @@
+env/
+__pycache__/
+*.pyc
+logs/
+data/*
+!data/vocab300.txt
+reports/*.onnx
+reports/*_meta.json
+models/*.task
+t5_out/
+.kaggle/

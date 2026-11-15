@@ -1,0 +1,163 @@
+{
+ "t5_bleu": 78.47616239105642,
+ "t5_chrf": 81.30474358842253,
+ "baseline_bleu": 0.4182810270921865,
+ "baseline_chrf": 32.53869674134805,
+ "t5_exact": 0.7267617812364894,
+ "baseline_exact": 0.0,
+ "gen_ms_p50": 196.02840021252632,
+ "n_test": 2313,
+ "train_min": 11.599455753962198,
+ "samples": [
+  [
+   "NO LIKE KNIFE",
+   "Sad",
+   "I don't like the knife.",
+   "I don't like the knife."
+  ],
+  [
+   "MILK COLD",
+   "Surprise",
+   "The milk is cold!",
+   "The milk is cold!"
+  ],
+  [
+   "RESTAURANT GO",
+   "Fear",
+   "I'm going to the restaurant.",
+   "I'm going to the restaurant."
+  ],
+  [
+   "PAST BUY PENCIL",
+   "Surprise",
+   "I bought a pencil before!",
+   "I bought a pencil before!"
+  ],
+  [
+   "RESTAURANT GO",
+   "Neutral",
+   "I'm going to the restaurant.",
+   "I'm going to the restaurant."
+  ],
+  [
+   "DRINK FINISH",
+   "Angry",
+   "I've finished drinking!",
+   "I already drank!"
+  ],
+  [
+   "SOON TEACH COUSIN",
+   "Neutral",
+   "I will teach my cousin soon.",
+   "I will teach my cousin soon."
+  ],
+  [
+   "CORN BAD",
+   "Sad",
+   "The corn is bad.",
+   "The corn is bad."
+  ],
+  [
+   "NOW BROTHER LAUGH",
+   "Happy",
+   "My brother is laughing now!",
+   "My brother is laughing now!"
+  ],
+  [
+   "YOU LEAVE WHY",
+   "Fear",
+   "Why are you leaving?",
+   "Why are you leaving?"
+  ],
+  [
+   "HAVE BIRD",
+   "Fear",
+   "I have a bird.",
+   "I have a bird."
+  ],
+  [
+   "CHILDREN CUTE",
+   "Sad",
+   "The children is cute.",
+   "The children is cute."
+  ],
+  [
+   "DRINK FINISH",
+   "Neutral",
+   "I've finished drinking.",
+   "I already drank."
+  ],
+  [
+   "WINDOW NO LIKE",
+   "Sad",
+   "I don't like the window.",
+   "I don't like the window."
+  ],
+  [
+   "SUNDAY COOK FISH",
+   "Fear",
+   "I will cook some fish on Sunday.",
+   "I will cook some fish on Sunday."
+  ],
+  [
+   "YOU LEAVE WHY",
+   "Disgust",
+   "Why are you leaving?",
+   "Why are you leaving?"
+  ],
+  [
+   "AGAIN PLEASE",
+   "Disgust",
+   "Please repeat.",
+   "Could you say that again, please?"
+  ],
+  [
+   "YOU LEAVE WHY",
+   "Disgust",
+   "Why are you leaving?",
+   "Why are you leaving?"
+  ],
+  [
+   "LATER HELP MOTHER",
+   "Disgust",
+   "I will help my mother later.",
+   "I will help my mother later."
+  ],
+  [
+   "HAVE BIRD",
+   "Happy",
+   "I have a bird!",
+   "I have a bird!"
+  ],
+  [
+   "CLOCK WANT",
+   "Sad",
+   "I want a clock.",
+   "I want a clock."
+  ],
+  [
+   "WHO HELP",
+   "Neutral",
+   "Who is helping?",
+   "Who can help?"
+  ],
+  [
+   "RESTAURANT GO",
+   "Happy",
+   "I'm going to the restaurant!",
+   "I'm going to the restaurant!"
+  ],
+  [
+   "LATER HOUSE GO",
+   "Disgust",
+   "I'm going to the house later.",
+   "I'm going to the house later."
+  ],
+  [
+   "WHO HELP",
+   "Happy",
+   "Who will help me?",
+   "Who can help?"
+  ]
+ ]
+}

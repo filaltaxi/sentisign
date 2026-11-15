@@ -1,0 +1,20 @@
+{
+ "subset": 100,
+ "seed": 0,
+ "n_test_signers": 13,
+ "A_isolated_model": {
+  "WER": 0.638,
+  "perfect_sentences": 0.06,
+  "threshold": 0.35,
+  "train_windows": 738,
+  "blank_windows": 0
+ },
+ "B_sentence_windows_plus_blank": {
+  "WER": 0.5224444444444445,
+  "perfect_sentences": 0.14,
+  "threshold": 0.35,
+  "train_windows": 20931,
+  "blank_windows": 4381
+ },
+ "minutes": 9.07386971314748
+}

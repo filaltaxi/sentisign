@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SentiSign v2</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/ort.min.js"></script>
+</head>
+<body>
+<header><h1>SentiSign</h1><span id="status">Loading models…</span></header>
+<main>
+  <section class="cam">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div class="state" id="state">idle</div>
+  </section>
+  <section class="panel">
+    <div class="row"><button id="start">Start camera</button><button id="calib" disabled>Calibrate neutral face (3 s)</button></div>
+    <h2>Recognised signs</h2>
+    <div id="glosses" class="glosses"></div>
+    <div id="top3" class="top3"></div>
+    <h2>Emotion</h2>
+    <div id="emotion" class="emotion">–</div>
+    <h2>Sentence</h2>
+    <textarea id="sentence" rows="2" placeholder="The sentence appears here; you can edit it before it is spoken."></textarea>
+    <div class="row"><button id="send">Speak now</button><button id="undo">Undo last sign</button><button id="clear">Clear</button></div>
+    <audio id="audio" controls></audio>
+    <p class="note">Video never leaves this device. Only recognised words and an emotion label are sent to the server. Not for medical, legal or emergency use.</p>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
