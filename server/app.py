@@ -124,6 +124,7 @@ def mode():
 
 def mount_static(target):
     target.mount("/models", StaticFiles(directory=os.path.join(ROOT, "deploy")), name="models")
+    target.mount("/deploy", StaticFiles(directory=os.path.join(ROOT, "deploy")), name="deploy")  # the page asks for ../deploy/
     target.mount("/", StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name="web")
 
 

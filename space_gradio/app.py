@@ -21,11 +21,13 @@ def speak(glosses: str, emotion: str, sentence: str):
     return text, wav or ""
 
 
-# ZeroGPU only registers @spaces.GPU functions when Gradio itself starts the server (demo.launch),
-# so the browser app is added to Gradio's own FastAPI app after launch, ahead of Gradio's routes.
-REDIRECT = "() => { if (!location.pathname.startsWith('/sentisign')) location.replace('/sentisign/'); }"
+# ZeroGPU only registers @spaces.GPU functions when Gradio itself starts the server (demo.launch).
+# The browser app is served through Gradio's own file route, so the Space root redirects to it.
+WEB, DEPLOY = os.path.join(ROOT, "web"), os.path.join(ROOT, "deploy")
+APP_URL = "/gradio_api/file=" + os.path.join(WEB, "index.html")
+REDIRECT = "() => { location.replace('%s'); }" % APP_URL
 with gr.Blocks(title="SentiSign") as demo:
-    gr.Markdown("Opening the SentiSign app... If nothing happens, go to [/sentisign/](/sentisign/).")
+    gr.Markdown(f"Opening the SentiSign app... If nothing happens, [click here]({APP_URL}).")
     with gr.Row(visible=False):
         g, e, s, t, w = gr.Textbox(), gr.Textbox(), gr.Textbox(), gr.Textbox(), gr.Textbox()
         gr.Button("compose").click(compose, [g, e], t, api_name="compose")
@@ -33,13 +35,6 @@ with gr.Blocks(title="SentiSign") as demo:
 demo.queue(default_concurrency_limit=2)
 
 if __name__ == "__main__":
-    from starlette.routing import Mount, Route
-    from starlette.responses import JSONResponse
-    from starlette.staticfiles import StaticFiles
     demo.launch(server_name=os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0"),
-                server_port=int(os.environ.get("GRADIO_SERVER_PORT", 7860)), prevent_thread_lock=True, js=REDIRECT)
-    routes = demo.app.router.routes
-    routes.insert(0, Route("/api/mode", lambda request: JSONResponse({"mode": "gradio"})))
-    routes.insert(0, Mount("/models", app=StaticFiles(directory=os.path.join(ROOT, "deploy")), name="models"))
-    routes.insert(0, Mount("/sentisign", app=StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name="web"))
-    demo.block_thread()
+                server_port=int(os.environ.get("GRADIO_SERVER_PORT", 7860)),
+                allowed_paths=[WEB, DEPLOY], js=REDIRECT)

@@ -13,12 +13,12 @@ const setState = t => ($("state").textContent = t);
 async function load() {
   const fileset = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
   const opt = path => ({ baseOptions: { modelAssetPath: path, delegate: "GPU" }, runningMode: "VIDEO" });
-  hand = await HandLandmarker.createFromOptions(fileset, { ...opt("/models/hand_landmarker.task"), numHands: 2 });
-  pose = await PoseLandmarker.createFromOptions(fileset, opt("/models/pose_landmarker_lite.task"));
-  face = await FaceLandmarker.createFromOptions(fileset, { ...opt("/models/face_landmarker.task"), outputFaceBlendshapes: true, numFaces: 1 });
-  meta = await (await fetch("/models/sign_meta.json")).json();
-  sess = await ort.InferenceSession.create("/models/sign.onnx", { executionProviders: ["wasm"] });
-  try { emo = await (await fetch("/models/emotion.json")).json(); } catch { emo = null; }
+  hand = await HandLandmarker.createFromOptions(fileset, { ...opt("../deploy/hand_landmarker.task"), numHands: 2 });
+  pose = await PoseLandmarker.createFromOptions(fileset, opt("../deploy/pose_landmarker_lite.task"));
+  face = await FaceLandmarker.createFromOptions(fileset, { ...opt("../deploy/face_landmarker.task"), outputFaceBlendshapes: true, numFaces: 1 });
+  meta = await (await fetch("../deploy/sign_meta.json")).json();
+  sess = await ort.InferenceSession.create("../deploy/sign.onnx", { executionProviders: ["wasm"] });
+  try { emo = await (await fetch("../deploy/emotion.json")).json(); } catch { emo = null; }
   await connectServer();
   setStatus(`Ready · ${meta.glosses.length} signs`); $("calib").disabled = false;
 }
@@ -81,8 +81,9 @@ function render() {
 // or the Gradio API on the Hugging Face Space (free shared GPU, one call per request).
 let gradio = null, prepared = null;
 async function connectServer() {
-  let mode = "ws";
-  try { mode = (await (await fetch("/api/mode")).json()).mode; } catch {}
+  // On the Hugging Face Space the page is served by Gradio's file route; on the laptop by the local server.
+  let mode = location.pathname.includes("/gradio_api/file=") ? "gradio" : "ws";
+  if (mode === "ws") try { mode = (await (await fetch("/api/mode")).json()).mode; } catch {}
   if (mode === "gradio") {
     const { Client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.8.0/dist/index.min.js");
     gradio = await Client.connect(`${location.origin}/`);
