@@ -1,4 +1,19 @@
-chatterbox-tts==0.1.7
+# The Space's ZeroGPU is an RTX Pro 6000 (Blackwell), which needs a PyTorch build with CUDA 12.8.
+# chatterbox-tts pins torch 2.6, so it is installed with --no-deps by app.py and its dependencies are listed here.
+torch==2.8.0
+torchaudio==2.8.0
+transformers==5.2.0
+diffusers==0.29.0
+librosa==0.11.0
+s3tokenizer
+resemble-perth>=1.0.0
+conformer==0.3.2
+safetensors==0.5.3
+spacy-pkuseg
+pykakasi==2.3.0
+pyloudnorm
+omegaconf
+numpy<2
 peft
 sentencepiece
 fastapi
