@@ -85,7 +85,7 @@ async function connectServer() {
   try { mode = (await (await fetch("/api/mode")).json()).mode; } catch {}
   if (mode === "gradio") {
     const { Client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.8.0/dist/index.min.js");
-    gradio = await Client.connect(`${location.origin}/gradio/`);
+    gradio = await Client.connect(`${location.origin}/`);
   } else {
     ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
     ws.onmessage = onServer;

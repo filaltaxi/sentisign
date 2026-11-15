@@ -21,16 +21,25 @@ def speak(glosses: str, emotion: str, sentence: str):
     return text, wav or ""
 
 
-with gr.Blocks(title="SentiSign API") as demo:
-    gr.Markdown("SentiSign API. Open the app at the Space's root URL.")
-    g, e, s, t, w = gr.Textbox(label="glosses"), gr.Textbox(label="emotion"), gr.Textbox(label="sentence"), gr.Textbox(label="text"), gr.Textbox(label="wav (base64)")
-    gr.Button("compose").click(compose, [g, e], t, api_name="compose")
-    gr.Button("speak").click(speak, [g, e, s], [t, w], api_name="speak")
+# ZeroGPU only registers @spaces.GPU functions when Gradio itself starts the server (demo.launch),
+# so the browser app is added to Gradio's own FastAPI app after launch, ahead of Gradio's routes.
+REDIRECT = "() => { if (!location.pathname.startsWith('/sentisign')) location.replace('/sentisign/'); }"
+with gr.Blocks(title="SentiSign") as demo:
+    gr.Markdown("Opening the SentiSign app... If nothing happens, go to [/sentisign/](/sentisign/).")
+    with gr.Row(visible=False):
+        g, e, s, t, w = gr.Textbox(), gr.Textbox(), gr.Textbox(), gr.Textbox(), gr.Textbox()
+        gr.Button("compose").click(compose, [g, e], t, api_name="compose")
+        gr.Button("speak").click(speak, [g, e, s], [t, w], api_name="speak")
 demo.queue(default_concurrency_limit=2)
 
-app = gr.mount_gradio_app(server.app, demo, path="/gradio")
-server.mount_static(app)
-
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host=os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0"), port=int(os.environ.get("GRADIO_SERVER_PORT", 7860)))
+    from starlette.routing import Mount, Route
+    from starlette.responses import JSONResponse
+    from starlette.staticfiles import StaticFiles
+    demo.launch(server_name=os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0"),
+                server_port=int(os.environ.get("GRADIO_SERVER_PORT", 7860)), prevent_thread_lock=True, js=REDIRECT)
+    routes = demo.app.router.routes
+    routes.insert(0, Route("/api/mode", lambda request: JSONResponse({"mode": "gradio"})))
+    routes.insert(0, Mount("/models", app=StaticFiles(directory=os.path.join(ROOT, "deploy")), name="models"))
+    routes.insert(0, Mount("/sentisign", app=StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name="web"))
+    demo.block_thread()
