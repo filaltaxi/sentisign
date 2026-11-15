@@ -116,8 +116,19 @@ async def ws(sock: WebSocket):
         pass
 
 
-app.mount("/models", StaticFiles(directory=os.path.join(ROOT, "deploy")), name="models")
-app.mount("/", StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name="web")
+@app.get("/api/mode")
+def mode():
+    """Tells the browser how to reach the models: 'ws' = this WebSocket server, 'gradio' = Gradio API (Hugging Face Space)."""
+    return {"mode": os.environ.get("SENTISIGN_MODE", "ws")}
+
+
+def mount_static(target):
+    target.mount("/models", StaticFiles(directory=os.path.join(ROOT, "deploy")), name="models")
+    target.mount("/", StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name="web")
+
+
+if os.environ.get("SENTISIGN_MODE", "ws") == "ws":
+    mount_static(app)   # the Space adds its Gradio API first, then mounts the static files itself
 
 if __name__ == "__main__":
     import uvicorn

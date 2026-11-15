@@ -19,8 +19,7 @@ async function load() {
   meta = await (await fetch("/models/sign_meta.json")).json();
   sess = await ort.InferenceSession.create("/models/sign.onnx", { executionProviders: ["wasm"] });
   try { emo = await (await fetch("/models/emotion.json")).json(); } catch { emo = null; }
-  ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
-  ws.onmessage = onServer;
+  await connectServer();
   setStatus(`Ready · ${meta.glosses.length} signs`); $("calib").disabled = false;
 }
 
@@ -78,7 +77,39 @@ function render() {
   $("top3").querySelectorAll("button").forEach(b => (b.onclick = () => { glosses[glosses.length - 1] = { gloss: lastTop3.cands[b.dataset.k].gloss, sure: true }; lastTop3 = null; render(); prepare(); }));
 }
 
-const send = (o) => ws && ws.readyState === 1 && ws.send(JSON.stringify(o));
+// Two ways to reach the sentence + voice models: a WebSocket on the local server (laptop),
+// or the Gradio API on the Hugging Face Space (free shared GPU, one call per request).
+let gradio = null, prepared = null;
+async function connectServer() {
+  let mode = "ws";
+  try { mode = (await (await fetch("/api/mode")).json()).mode; } catch {}
+  if (mode === "gradio") {
+    const { Client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.8.0/dist/index.min.js");
+    gradio = await Client.connect(`${location.origin}/gradio/`);
+  } else {
+    ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
+    ws.onmessage = onServer;
+  }
+}
+const deliver = (o) => onServer({ data: JSON.stringify(o) });
+async function sendGradio(o) {
+  const g = o.glosses.join(" ");
+  try {
+    if (o.type === "prepare") {
+      if (!g) return;
+      const key = g + "|" + o.emotion;
+      prepared = { key, p: gradio.predict("/compose", [g, o.emotion]) };
+      const r = await prepared.p; if (prepared && prepared.key === key) deliver({ type: "sentence", text: r.data[0] });
+    } else if (o.type === "speak") {
+      setStatus("Speaking… (the free GPU can take a few seconds)");
+      const r = await gradio.predict("/speak", [g, o.emotion, o.sentence || ""]);
+      const [text, wav] = r.data; deliver({ type: "sentence", text });
+      deliver(wav ? { type: "audio", wav } : { type: "text_only" }); prepared = null;
+      setStatus(`Ready · ${meta.glosses.length} signs`);
+    }
+  } catch (e) { setStatus("Server busy or GPU quota reached: " + (e.message || e)); setState("idle"); }
+}
+const send = (o) => gradio ? sendGradio(o) : (ws && ws.readyState === 1 && ws.send(JSON.stringify(o)));
 function prepare() { send({ type: "prepare", glosses: glosses.map(g => g.gloss), emotion: emotionNow().label }); }
 function speak() {
   if (!glosses.length && !$("sentence").value) return;
