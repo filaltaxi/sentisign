@@ -19,7 +19,7 @@ async function load() {
   meta = await (await fetch("/models/sign_meta.json")).json();
   sess = await ort.InferenceSession.create("/models/sign.onnx", { executionProviders: ["wasm"] });
   try { emo = await (await fetch("/models/emotion.json")).json(); } catch { emo = null; }
-  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
   ws.onmessage = onServer;
   setStatus(`Ready · ${meta.glosses.length} signs`); $("calib").disabled = false;
 }

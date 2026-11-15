@@ -46,6 +46,8 @@ class Voice:
         self.kind = None
         try:
             import torch
+            if os.environ.get("SENTISIGN_VOICE", "").lower() == "kokoro":
+                raise RuntimeError("Chatterbox skipped (SENTISIGN_VOICE=kokoro)")
             try:
                 import perth  # Chatterbox watermarker; its native part fails to load on some Windows installs -> fall back to the no-op one
                 if getattr(perth, "PerthImplicitWatermarker", None) is None: perth.PerthImplicitWatermarker = perth.DummyWatermarker
@@ -84,8 +86,11 @@ print(f"composer: {composer.kind} | voice: {voice.kind or 'text only'}")
 def produce(glosses, emotion, sentence=None):
     t0 = time.perf_counter(); text = sentence or composer(glosses, emotion); t1 = time.perf_counter()
     wav = voice(text, emotion) if text else None; t2 = time.perf_counter()
-    os.makedirs(os.path.dirname(LOG), exist_ok=True)
-    with open(LOG, "a") as f: f.write(json.dumps(dict(n=len(glosses), compose_ms=(t1 - t0) * 1e3, tts_ms=(t2 - t1) * 1e3, voice=voice.kind)) + "\n")
+    try:
+        os.makedirs(os.path.dirname(LOG), exist_ok=True)
+        with open(LOG, "a") as f: f.write(json.dumps(dict(n=len(glosses), compose_ms=(t1 - t0) * 1e3, tts_ms=(t2 - t1) * 1e3, voice=voice.kind)) + "\n")
+    except OSError:
+        pass  # read-only filesystem on some hosts: latency logging is optional
     return text, wav
 
 
@@ -116,4 +121,4 @@ app.mount("/", StaticFiles(directory=os.path.join(ROOT, "web"), html=True), name
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", 8000)))
